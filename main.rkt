@@ -33,25 +33,11 @@
   ;; or with `raco test`. The code here does not run when this file is
   ;; required by another module.
   (require "./test/test_junge.rkt")
-  (provide (all-from-out "./test/test_junge.rkt"))
-  )
+  (provide (all-from-out "./test/test_junge.rkt")))
 
-(module reader racket
-  (require syntax/strip-context)
- 
-  (provide (rename-out [junge-read read]
-                       [junge-read-syntax read-syntax]))
- 
-  (define (junge-read in)
-    (syntax->datum
-     (junge-read-syntax #f in)))
- 
-  (define (junge-read-syntax src in)
-    (with-syntax ([str (port->string in)])
-      (strip-context
-       #'(module anything racket
-           (provide data)
-           (define data 'str))))))
+(module+ reader
+  (require "./src/reader.rkt")
+  (provide (all-from-out "./src/reader.rkt")))
 
 (module+ main
   ;; (Optional) main submodule. Put code here if you need it to be executed when
@@ -60,5 +46,4 @@
   ;; http://docs.racket-lang.org/guide/Module_Syntax.html#%28part._main-and-test%29
 
   (require "./src/junge.rkt")
-  (provide (all-from-out "./src/junge.rkt"))
-  )
+  (provide (all-from-out "./src/junge.rkt")))
