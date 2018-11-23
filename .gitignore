@@ -5,3 +5,6 @@
 compiled/
 /doc/
 *.bak
+*.css
+*.js
+*.html
