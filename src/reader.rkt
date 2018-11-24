@@ -1,22 +1,29 @@
 #lang racket
 
-(require syntax/strip-context)
+(require racket/syntax
+         parser-tools/lex
+         (prefix-in : parser-tools/lex-sre))
  
-(provide (rename-out [junge-read read]
-                     [junge-read-syntax read-syntax]))
- 
-(define (junge-read in)
-  (syntax->datum
-   (junge-read-syntax #f in)))
- 
-(define (junge-read-syntax src in)
-  (with-syntax ([str (port->string in)])
-    (strip-context
-     #'(module anything racket
-         (module configure-runtime racket
-           (require junge/src/show)
-           (show-enabled #t))
-         (require junge/src/show)
-         (provide data)
-         (define data 'str)
-         (show data)))))
+(provide read-syntax)
+
+(define junge-lexer
+  (lexer
+   [numeric
+    (cons `(interpret,(string->number lexeme))
+          (junge-lexer input-port))]
+   [(:or #\+ #\- #\* #\/)
+    (cons `(interpret ,(string->symbol lexeme))
+          (junge-lexer input-port))]
+   [whitespace (junge-lexer input-port)]
+   [(eof) '()]))
+
+(define (read port)
+    (junge-lexer port))
+
+(define (read-syntax path port)
+  (define src-datums (read port))
+  (define module-datum `(module junge-mod junge/src/expander
+                          ,@src-datums))
+  ;module-datum
+  (datum->syntax #f module-datum))
+
