@@ -9,6 +9,9 @@
 @section{To Do}
 @itemlist[@item{start simple with only the four arithmetic operations and integers.}
  #:style 'ordered]
+@subsection{Name Ideas}
+@itemlist[@item{@bold{junge}: J and befunge contraction.}
+          #:'ordered]
 
 @section{Language Specification}
 @subsection{Features}
@@ -23,42 +26,101 @@
           #:style 'ordered]
 
 @subsection{Concepts}
+@subsubsection{What makes junge stand out}
+Junge tries to provide a solution to what personally frustrated me when using visual programming
+languages and environments: code navigation, and spaghetti code. Junge therefore places UI first
+and foremost by providing efficient ways of isolating and making easily accessible the elements
+that the users wants when editing a piece of code.
 @subsubsection{Execution Model}
 N-dimensional space stack-based execution model, where instructions are identified by their spatial
-coordinates. A suite of instructions in a straight line (SL) is a full program corresponding to a
-thread. Changing orientation in space spawns a new thread. Source files are 2-dimensional projections
-of an SL with all of its immediate children, and source code is therefore 2-D. Conceptually, source is
-N-dimensional, with N determined by the number of vertices attached to the node possessing the
-maximal number of vertices.
+coordinates. In practice, a functional, N-dimensional Forth with no assignment operator. A suite of
+instructions in a straight line (SL) is a full program corresponding to athread. Changing orientation
+in space spawns a new thread. Source files are 2-dimensional projections of an SL with all of its
+immediate children. Conceptually, source is N-dimensional, with N determined by the number of
+vertices attached to the node possessing the maximal number of vertices.
 @subsubsection{Development Environment}
 Snappy, and entirely controlled by keyboard, optionally mouse. Focused on code navigation by using
 projections and rotations to get the desired code into view. Strong use of semantic visual cues.
 
 @subsection{Source Code}
-@subsubsection{Anatomy}
-Each file is a 2D array of characters, including the relevant SL and its name, and the spatial
-coordinates of the first instruction of all of its immediate parents (i.e. providing input) and
-children (i.e. given output).
 @subsubsection{File Structure}
-A file contains three columns separated by spaces. The left column is a list of input coordinates in
-parentheses. The central column contains the SL code. The right column is similar to the left one and
-defines outputs.
-@subsubsection{File Example}
-@tabular[#:style 'boxed
-         #:column-properties '(left left left left)
-         #:row-properties '(bottom-border ())
-         (list (list @bold{parents} @bold{SL}          @bold{children} @bold{meaning})
-               (list ""             "do this and that" ""              "SL (function) name")
-               (list ""             "(0 0 0)"          ""              "ID of 1st intruction")
-               (list ""             'cont              'cont           "(here, origin or program start)")
-               (list "(6 5 0)"      "*"                ""              "multiply with inputs")
-               (list ""             "//comment"        'cont           "{(0 0 0)(6 5 0)}")
-               (list ""             'cont              'cont           "and output")
-               (list ""             'cont              'cont"{(1 0 0)}")
-               (list "(0 0 0)"      "+/"               "(12 5 3)"      "sum with inputs")
-               (list ""             'cont              'cont           "{(0 0 0)(1 0 0)}")
-               (list ""             'cont              'cont           "and outputs")
-               (list ""             'cont              'cont           "{(2 0 0)(12 5 3)}"))]
+Each file is divided in blocks, each defining a SL. Blocks are separated by newlines.
+An SL is defined by the following elements:
+@itemlist[@item{block name (alphanumeric)}
+           @item{dimension of execution (number)}
+           @item{coordinates of first instruction (list of numbers)}
+           @item{SL code (alphanumeric, single line)}
+          #:style 'ordered]
+@subsubsection{Basic File Example}
+Hello, World!
+0
+0
+"Hello, World!"
+@subsubsection{composed File Example}
+simplest (sequential computation, equivalent to Forth),
+@verbatim|{Beginning
+0
+0
+"Hello, " "World!" concatenate}|
+
+rewritten in parallel (slower, finish is obtained from new thread),
+@verbatim|{First
+0
+0 0
+"Hello, "
+
+Second
+1
+1 1
+"World!"
+
+HelloWorld
+0
+1 0
+concatenate}|
+
+more easily rewritten,
+@verbatim|{Start
+0
+0 0
+"Hello, " concatenate
+
+Finish
+1
+1 0
+"World!"}|
+
+but the follwing is incorrect,
+@verbatim|{Initial
+0
+0
+"Hello, " concatenate
+
+Subsequent
+0
+2
+"World!"}|
+
+@subsubsection{Source Semantics}
+Each source block is a struct.
+@verbatim|{HW
+0
+0
+"HW"}|
+is compiled to a struct as:
+@verbatim|{(struct block (name dimension start-position))}|
+
+Block name will be used by the UI to display the block to the user in high-level view. Navigation
+between blocks is done through keyboard interaction. Any block can be entered to display its
+components (primitives, or other blocks as in the composed file example above).
+Source code is fused to multidimensional array at compile time.
+Function input argument order is defined in increasing order of dimensions, since contiguous
+elements to a node are pushed to the stack in this order. For each SL, the computed coordinates
+of next block (adding the number of SL tokens to the starting number in the relevant dimension)
+defines the output block coordinates. Instruction collision detection and solving is performed
+automatically (i.e. the instruction array is maximally densified). The third example above
+illustrates that due to the stack execution model, function inputs must be stacked before
+function execution is attempted.
 
 @section{Ideas}
 @itemlist[@item{@bold{variables:} perhaps not needed thanks to muldimensionality}
