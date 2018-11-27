@@ -11,7 +11,7 @@
  #:style 'ordered]
 @subsection{Name Ideas}
 @itemlist[@item{@bold{junge}: J and befunge contraction.}
-          #:'ordered]
+          #:style 'ordered]
 
 @section{Language Specification}
 @subsection{Features}
@@ -124,4 +124,5 @@ function execution is attempted.
 
 @section{Ideas}
 @itemlist[@item{@bold{variables:} perhaps not needed thanks to muldimensionality}
-          @item{@bold{types:} numbers, string, array}]
+          @item{@bold{types:} dependent}
+          @item{bold{lib:} MKSA system as types}]

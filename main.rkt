@@ -45,5 +45,4 @@
   ;; does not run when this file is required by another module. Documentation:
   ;; http://docs.racket-lang.org/guide/Module_Syntax.html#%28part._main-and-test%29
 
-  (require "./src/junge.rkt")
-  (provide (all-from-out "./src/junge.rkt")))
+  )
