@@ -38,6 +38,12 @@ instructions in a straight line (SL) is a full program corresponding to athread.
 in space spawns a new thread. Source files are 2-dimensional projections of an SL with all of its
 immediate children. Conceptually, source is N-dimensional, with N determined by the number of
 vertices attached to the node possessing the maximal number of vertices.
+@subsubsection{Execution Flow}
+The direction of execution flow is deduced from the SL initial instruction coordinates and the SL
+working dimension, which respectively mark the start and execution direction of the thread. The
+last instruction is also marked as such to avoid confusion when the source code array is densely
+populated. The first instruction takes input from all adjacent last cells. The dimension of
+execution is signed to indicate the direction of information flow.
 @subsubsection{Development Environment}
 Snappy, and entirely controlled by keyboard, optionally mouse. Focused on code navigation by using
 projections and rotations to get the desired code into view. Strong use of semantic visual cues.
@@ -52,7 +58,8 @@ An SL is defined by the following elements:
            @item{SL code (alphanumeric, single line)}
           #:style 'ordered]
 @subsubsection{Basic File Example}
-Hello, World!
+def
+HelloWorld
 0
 0
 "Hello, World!"
