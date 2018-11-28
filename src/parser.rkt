@@ -5,6 +5,7 @@
 
 (provide parse)
 
+;Should maybe be changed to the megaparsack lib in the future
 (define junge-parser
   (parser
    (start start)
@@ -18,9 +19,11 @@
      [(expression) $1]
      [() #f])
 ;the following is subject to change
-    (expression [(value) (list $1)]
-                [(function) (list $1)]
-                [(expression expression) (append $1 $2)])
+    (expression [(term rest) (append $1 $2)])
+    (rest [(expression) $1]
+          [() empty])
+    (term [(value) (list $1)]
+          [(function) (list $1)])
     (value [(NUM) (string->number $1)]
            [(STR) $1])
     (function [(ID) (string->symbol $1)]))))
@@ -41,4 +44,4 @@
 (define (parse input)
 (parse-runner junge-parser junge-lexer input))
 
-;(parse "1 1 +")
+#;(parse (open-input-string "1 1 +"))
